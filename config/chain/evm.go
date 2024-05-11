@@ -12,6 +12,7 @@ import (
 
 type EVMConfig struct {
 	GeneralChainConfig     GeneralChainConfig
+	From                   string
 	Bridge                 string
 	Erc20Handler           string
 	Erc721Handler          string
@@ -28,6 +29,7 @@ type EVMConfig struct {
 
 type RawEVMConfig struct {
 	GeneralChainConfig     `mapstructure:",squash"`
+	From                   string  `mapstructure:"from"`
 	Bridge                 string  `mapstructure:"bridge"`
 	Erc20Handler           string  `mapstructure:"erc20Handler"`
 	Erc721Handler          string  `mapstructure:"erc721Handler"`
@@ -81,6 +83,7 @@ func NewEVMConfig(chainConfig map[string]interface{}) (*EVMConfig, error) {
 		Erc721Handler:          c.Erc721Handler,
 		GenericHandler:         c.GenericHandler,
 		Bridge:                 c.Bridge,
+		From:                   c.From,
 		BlockRetryInterval:     time.Duration(c.BlockRetryInterval) * time.Second,
 		GasLimit:               big.NewInt(c.GasLimit),
 		MaxGasPrice:            big.NewInt(c.MaxGasPrice),
