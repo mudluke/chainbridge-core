@@ -61,6 +61,7 @@ func BindDepositFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&Recipient, "recipient", "", "Address of recipient")
 	cmd.Flags().StringVar(&Bridge, "bridge", "", "Address of bridge contract")
 	cmd.Flags().StringVar(&Amount, "amount", "", "Amount to deposit")
+	cmd.Flags().StringVar(&Fee, "fee", "0", "Fee to deposit")
 	cmd.Flags().Uint8Var(&DomainID, "domain", 0, "Destination domain ID")
 	cmd.Flags().StringVar(&ResourceID, "resource", "", "Resource ID for transfer")
 	cmd.Flags().Uint64Var(&Decimals, "decimals", 0, "ERC20 token decimals")
@@ -90,6 +91,7 @@ func ProcessDepositFlags(cmd *cobra.Command, args []string) error {
 	decimals := big.NewInt(int64(Decimals))
 	BridgeAddr = common.HexToAddress(Bridge)
 	RealAmount, err = callsUtil.UserAmountToWei(Amount, decimals)
+	FeeAmount, err = callsUtil.UserAmountToWei(Fee, big.NewInt(18))
 	if err != nil {
 		return err
 	}
@@ -100,7 +102,7 @@ func ProcessDepositFlags(cmd *cobra.Command, args []string) error {
 func DepositCmd(cmd *cobra.Command, args []string, contract *bridge.BridgeContract) error {
 	hash, err := contract.Erc20Deposit(
 		RecipientAddress, RealAmount, ResourceIdBytesArr,
-		uint8(DomainID), transactor.TransactOptions{GasLimit: gasLimit, Priority: transactor.TxPriorities[Priority]},
+		uint8(DomainID), transactor.TransactOptions{GasLimit: gasLimit, Priority: transactor.TxPriorities[Priority], Value: FeeAmount},
 	)
 	if err != nil {
 		log.Error().Err(fmt.Errorf("erc20 deposit error: %v", err))
