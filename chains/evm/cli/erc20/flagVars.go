@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-//flag vars
+// flag vars
 var (
 	Amount         string
 	Decimals       uint64
@@ -23,10 +23,11 @@ var (
 	OwnerAddress   string
 	SpenderAddress string
 	Minter         string
+	Fee            string
 	Priority       string
 )
 
-//processed flag vars
+// processed flag vars
 var (
 	RecipientAddress   common.Address
 	RealAmount         *big.Int
@@ -34,6 +35,7 @@ var (
 	MinterAddr         common.Address
 	BridgeAddr         common.Address
 	ResourceIdBytesArr types.ResourceID
+	FeeAmount          *big.Int
 )
 
 // global flags
