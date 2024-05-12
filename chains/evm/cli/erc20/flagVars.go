@@ -23,7 +23,7 @@ var (
 	OwnerAddress   string
 	SpenderAddress string
 	Minter         string
-	Fee            string
+	Fee            uint64
 	Priority       string
 )
 
