@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/ChainSafe/chainbridge-core/keystore"
 	"os"
 	"os/signal"
 	"syscall"
@@ -36,6 +37,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
+
+const DefaultKeystorePath = "./keys"
 
 func Run() error {
 	configuration, err := config.GetConfig(viper.GetString(flags.ConfigFlagName))
@@ -74,13 +77,27 @@ func Run() error {
 				if err != nil {
 					panic(err)
 				}
+				var kp *secp256k12.Keypair
+				if len(config.GeneralChainConfig.Key) == 0 {
+					kpI, err := keystore.KeypairFromAddress(config.From, keystore.EthChain, DefaultKeystorePath, false)
+					if err != nil {
+						panic(err)
+					}
 
-				privateKey, err := secp256k1.HexToECDSA(config.GeneralChainConfig.Key)
-				if err != nil {
-					panic(err)
+					keyPair := &secp256k12.Keypair{}
+					err = keyPair.Decode(kpI.Encode())
+					if err != nil {
+						panic(err)
+					}
+
+					kp = keyPair
+				} else {
+					privateKey, err := secp256k1.HexToECDSA(config.GeneralChainConfig.Key)
+					if err != nil {
+						panic(err)
+					}
+					kp = secp256k12.NewKeypair(*privateKey)
 				}
-
-				kp := secp256k12.NewKeypair(*privateKey)
 
 				client, err := evmclient.NewEVMClient(config.GeneralChainConfig.Endpoint, kp)
 				if err != nil {
