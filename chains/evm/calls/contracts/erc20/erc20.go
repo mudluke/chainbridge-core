@@ -27,6 +27,17 @@ func NewERC20Contract(
 	return &ERC20Contract{contracts.NewContract(erc20ContractAddress, a, b, client, transactor)}
 }
 
+// decimals for usdt decimals in bsc is 18
+func NewERC20ContractBsc(
+	client calls.ContractCallerDispatcher,
+	erc20ContractAddress common.Address,
+	transactor transactor.Transactor,
+) *ERC20Contract {
+	a, _ := abi.JSON(strings.NewReader(consts.ERC20PresetMinterPauserABI))
+	b := common.FromHex(consts.ERC20PresetMinterPauserBinBsc)
+	return &ERC20Contract{contracts.NewContract(erc20ContractAddress, a, b, client, transactor)}
+}
+
 func (c *ERC20Contract) GetBalance(address common.Address) (*big.Int, error) {
 	log.Debug().Msgf("Getting balance for %s", address.String())
 	res, err := c.CallContract("balanceOf", address)

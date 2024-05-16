@@ -58,6 +58,7 @@ var (
 	Erc20Handler     bool
 	Erc20Name        string
 	Erc20Symbol      string
+	Erc20Decimals    uint8
 	Erc721           bool
 	Erc721Handler    bool
 	Erc721Name       string
@@ -77,6 +78,7 @@ func BindDeployEVMFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVar(&Erc20Handler, "erc20-handler", false, "Deploy ERC20 handler")
 	cmd.Flags().StringVar(&Erc20Name, "erc20-name", "", "ERC20 contract name")
 	cmd.Flags().StringVar(&Erc20Symbol, "erc20-symbol", "", "ERC20 contract symbol")
+	cmd.Flags().Uint8Var(&Erc20Decimals, "erc20-decimals", 6, "ERC20 contract decimals")
 	cmd.Flags().BoolVar(&Erc721, "erc721", false, "Deploy ERC721")
 	cmd.Flags().BoolVar(&Erc721Handler, "erc721-handler", false, "Deploy ERC721 handler")
 	cmd.Flags().StringVar(&Erc721Name, "erc721-name", "", "ERC721 contract name")
@@ -95,7 +97,7 @@ func init() {
 func ValidateDeployFlags(cmd *cobra.Command, args []string) error {
 	Deployments = make([]string, 0)
 	if DeployAll {
-		flags.MarkFlagsAsRequired(cmd, "relayer-threshold", "domain", "fee", "erc20-symbol", "erc20-name")
+		flags.MarkFlagsAsRequired(cmd, "relayer-threshold", "domain", "fee", "erc20-symbol", "erc20-name", "erc20-decimals")
 		Deployments = append(Deployments, []string{"bridge", "erc20-handler", "erc721-handler", "generic-handler", "erc20", "erc721"}...)
 	} else {
 		if Bridge {
@@ -204,6 +206,9 @@ func DeployCLI(cmd *cobra.Command, args []string, txFabric calls.TxFabric, gasPr
 		case "erc20":
 			log.Debug().Msgf("deploying ERC20..")
 			erc20Contract := erc20.NewERC20Contract(ethClient, common.Address{}, t)
+			if Erc20Decimals == 18 {
+				erc20Contract = erc20.NewERC20ContractBsc(ethClient, common.Address{}, t)
+			}
 			erc20Addr, err := erc20Contract.DeployContract(Erc20Name, Erc20Symbol)
 			if err != nil {
 				log.Error().Err(fmt.Errorf("erc 20 deploy failed: %w", err))
