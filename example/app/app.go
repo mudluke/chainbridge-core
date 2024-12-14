@@ -6,15 +6,13 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/ChainSafe/chainbridge-core/keystore"
+
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
-
-	secp256k1 "github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/ChainSafe/chainbridge-core/chains/evm"
 	"github.com/ChainSafe/chainbridge-core/chains/evm/calls/contracts/bridge"
@@ -29,11 +27,13 @@ import (
 	secp256k12 "github.com/ChainSafe/chainbridge-core/crypto/secp256k1"
 	"github.com/ChainSafe/chainbridge-core/e2e/dummy"
 	"github.com/ChainSafe/chainbridge-core/flags"
+	"github.com/ChainSafe/chainbridge-core/keystore"
 	"github.com/ChainSafe/chainbridge-core/lvldb"
 	"github.com/ChainSafe/chainbridge-core/opentelemetry"
 	"github.com/ChainSafe/chainbridge-core/relayer"
 	"github.com/ChainSafe/chainbridge-core/store"
 	"github.com/ethereum/go-ethereum/common"
+	secp256k1 "github.com/ethereum/go-ethereum/crypto"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )

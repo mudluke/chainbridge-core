@@ -29,12 +29,37 @@ var (
 	}
 )
 
+var (
+	accountCommand = &cobra.Command{
+		Use:   "accounts",
+		Short: "manage bridge keystore",
+		Long: "The accounts command is used to manage the bridge keystore.\n" +
+			"\tTo import a keystore file: chainbridge accounts import path/to/file\n" +
+			"\tTo import a private key file: chainbridge accounts import --privateKey private_key\n",
+	}
+
+	importCmd = &cobra.Command{
+		RunE:  wrapHandler(handleImportCmd),
+		Use:   "import",
+		Short: "import bridge keystore",
+		Long: "The import subcommand is used to import a keystore for the bridge.\n" +
+			"\tA path to the keystore must be provided\n" +
+			"\tUse --privateKey to create a keystore from a provided private key.",
+	}
+)
+
 func init() {
 	flags.BindFlags(runCMD)
+
+	importCmd.Flags().Bool("privateKey", false, "Prompt for a private key to import.")
+	accountCommand.AddCommand(importCmd)
 }
 
 func Execute() {
 	rootCMD.AddCommand(runCMD, evmCLI.EvmRootCLI, local.LocalSetupCmd)
+
+	rootCMD.AddCommand(accountCommand)
+
 	if err := rootCMD.Execute(); err != nil {
 		log.Fatal().Err(err).Msg("failed to execute root cmd")
 	}
